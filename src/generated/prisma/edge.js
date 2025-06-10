@@ -213,7 +213,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "F:\\backEnd\\ExamManagementSystem\\src\\generated\\prisma",
+      "value": "C:\\Users\\anasm\\Downloads\\exam_managementSys-master\\src\\generated\\prisma",
       "fromEnvVar": null
     },
     "config": {
@@ -227,12 +227,11 @@ const config = {
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "F:\\backEnd\\ExamManagementSystem\\prisma\\schema.prisma",
+    "sourceFilePath": "C:\\Users\\anasm\\Downloads\\exam_managementSys-master\\prisma\\schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
-    "rootEnvPath": null,
-    "schemaEnvPath": "../../../.env"
+    "rootEnvPath": null
   },
   "relativePath": "../../../prisma",
   "clientVersion": "6.7.0",
@@ -244,13 +243,13 @@ const config = {
   "inlineDatasources": {
     "db": {
       "url": {
-        "fromEnvVar": "DATABASE_URL",
-        "value": "postgres://koyeb-adm:npg_FsI2NRKPZ7ir@ep-wild-thunder-a2uw2ko7.eu-central-1.pg.koyeb.app/koyebdb?sslmode=require&pgbouncer=true&connect_timeout=10"
+        "fromEnvVar": null,
+        "value": "postgresql://postgres:hYmXGIiSQTGjCvmeFYZOLlzDPBpUWcQp@mainline.proxy.rlwy.net:10199/railway"
       }
     }
   },
-  "inlineSchema": "// This is your Prisma schema file,\n// learn more about it in the docs: https://pris.ly/d/prisma-schema\n\n// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?\n// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init\n\ngenerator client {\n  provider = \"prisma-client-js\"\n  output   = \"../src/generated/prisma\"\n}\n\ndatasource db {\n  provider  = \"postgresql\"\n  url       = env(\"DATABASE_URL\")\n  directUrl = env(\"DIRECT_URL\")\n}\n\nenum Role {\n  STUDENT\n  TEACHER\n}\n\nmodel User {\n  id        String   @id @default(uuid())\n  name      String\n  email     String   @unique\n  password  String\n  age       Int\n  role      Role     @default(STUDENT)\n  createdAt DateTime @default(now())\n  udatedAt  DateTime @updatedAt\n  student   Student?\n  teacher   Teacher?\n\n  @@index([name])\n  @@map(\"users\")\n}\n\n//each user is student and student is user\nmodel Student {\n  id          String        @id @default(uuid())\n  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)\n  userId      String        @unique\n  StudentExam StudentExam[]\n\n  @@map(\"students\")\n}\n\nenum Status {\n  Pending\n  Confirmed\n  Blocked\n}\n\n//each user is teacher and teacher is user\nmodel Teacher {\n  id          String @id @default(uuid())\n  user        User   @relation(fields: [userId], references: [id], onDelete: Cascade)\n  userId      String @unique\n  subjectName String\n  idCardImage Json\n  idCardData  Json?\n  status      Status @default(Pending)\n  Exam        Exam[]\n\n  @@map(\"teachers\")\n}\n\nmodel Exam {\n  id          String        @id @default(uuid())\n  name        String\n  duration    String\n  grade       Int\n  questions   Question[]\n  teacher     Teacher       @relation(fields: [teacherId], references: [id], onDelete: Cascade)\n  teacherId   String\n  StudentExam StudentExam[]\n\n  @@map(\"exams\")\n}\n\nmodel StudentExam {\n  id        String  @id @default(uuid())\n  student   Student @relation(fields: [studentId], references: [id], onDelete: Cascade)\n  studentId String\n\n  Exam   Exam   @relation(fields: [examId], references: [id], onDelete: Cascade)\n  examId String\n\n  score Int\n\n  @@unique([studentId, examId])\n  @@map(\"studentExam\")\n}\n\n// Exam belongs to one Teacher\n// Teacher can have many Exam\n\nmodel Question {\n  id          String   @id @default(uuid())\n  theQuestion String\n  Exam        Exam     @relation(fields: [examId], references: [id], onDelete: Cascade)\n  examId      String\n  options     Option[]\n\n  @@map(\"questions\")\n}\n\nenum ChoicesKey {\n  A\n  B\n  C\n  D\n}\n\nmodel Option {\n  id         String     @id @default(uuid())\n  option     String\n  key        ChoicesKey\n  isCorrect  Boolean    @default(false)\n  question   Question   @relation(fields: [questionId], references: [id], onDelete: Cascade)\n  questionId String\n\n  @@map(\"options\")\n}\n\n//one quetion has many options \n// all options for one question \n",
-  "inlineSchemaHash": "20a3a958d0549d9e75d10216d20dde924a86ebec5b158f540a34cef7a16a5ac6",
+  "inlineSchema": "// This is your Prisma schema file,\n// learn more about it in the docs: https://pris.ly/d/prisma-schema\n\n// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?\n// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init\n\ngenerator client {\n  provider = \"prisma-client-js\"\n  output   = \"../src/generated/prisma\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = \"postgresql://postgres:hYmXGIiSQTGjCvmeFYZOLlzDPBpUWcQp@mainline.proxy.rlwy.net:10199/railway\"\n}\n\nenum Role {\n  STUDENT\n  TEACHER\n}\n\nmodel User {\n  id        String   @id @default(uuid())\n  name      String\n  email     String   @unique\n  password  String\n  age       Int\n  role      Role     @default(STUDENT)\n  createdAt DateTime @default(now())\n  udatedAt  DateTime @updatedAt\n  student   Student?\n  teacher   Teacher?\n\n  @@index([name])\n  @@map(\"users\")\n}\n\n//each user is student and student is user\nmodel Student {\n  id          String        @id @default(uuid())\n  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)\n  userId      String        @unique\n  StudentExam StudentExam[]\n\n  @@map(\"students\")\n}\n\nenum Status {\n  Pending\n  Confirmed\n  Blocked\n}\n\n//each user is teacher and teacher is user\nmodel Teacher {\n  id          String @id @default(uuid())\n  user        User   @relation(fields: [userId], references: [id], onDelete: Cascade)\n  userId      String @unique\n  subjectName String\n  idCardImage Json\n  idCardData  Json?\n  status      Status @default(Pending)\n  Exam        Exam[]\n\n  @@map(\"teachers\")\n}\n\nmodel Exam {\n  id          String        @id @default(uuid())\n  name        String\n  duration    String\n  grade       Int\n  questions   Question[]\n  teacher     Teacher       @relation(fields: [teacherId], references: [id], onDelete: Cascade)\n  teacherId   String\n  StudentExam StudentExam[]\n\n  @@map(\"exams\")\n}\n\nmodel StudentExam {\n  id        String  @id @default(uuid())\n  student   Student @relation(fields: [studentId], references: [id], onDelete: Cascade)\n  studentId String\n\n  Exam   Exam   @relation(fields: [examId], references: [id], onDelete: Cascade)\n  examId String\n\n  score Int\n\n  @@unique([studentId, examId])\n  @@map(\"studentExam\")\n}\n\n// Exam belongs to one Teacher\n// Teacher can have many Exam\n\nmodel Question {\n  id          String   @id @default(uuid())\n  theQuestion String\n  Exam        Exam     @relation(fields: [examId], references: [id], onDelete: Cascade)\n  examId      String\n  options     Option[]\n\n  @@map(\"questions\")\n}\n\nenum ChoicesKey {\n  A\n  B\n  C\n  D\n}\n\nmodel Option {\n  id         String     @id @default(uuid())\n  option     String\n  key        ChoicesKey\n  isCorrect  Boolean    @default(false)\n  question   Question   @relation(fields: [questionId], references: [id], onDelete: Cascade)\n  questionId String\n\n  @@map(\"options\")\n}\n\n//one quetion has many options \n// all options for one question \n",
+  "inlineSchemaHash": "3ec58720c94e512134673222239cf6beb9a0f143574e946df7c1b06462ba8030",
   "copyEngine": true
 }
 config.dirname = '/'
@@ -261,9 +260,7 @@ config.engineWasm = undefined
 config.compilerWasm = undefined
 
 config.injectableEdgeEnv = () => ({
-  parsed: {
-    DATABASE_URL: typeof globalThis !== 'undefined' && globalThis['DATABASE_URL'] || typeof process !== 'undefined' && process.env && process.env.DATABASE_URL || undefined
-  }
+  parsed: {}
 })
 
 if (typeof globalThis !== 'undefined' && globalThis['DEBUG'] || typeof process !== 'undefined' && process.env && process.env.DEBUG || undefined) {
