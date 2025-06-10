@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "exams" ALTER COLUMN "duration" DROP DEFAULT,
+ALTER COLUMN "grade" DROP DEFAULT;

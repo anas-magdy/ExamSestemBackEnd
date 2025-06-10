@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "exams" ADD COLUMN     "duration" TEXT NOT NULL DEFAULT '30',
+ADD COLUMN     "grade" INTEGER NOT NULL DEFAULT 100;

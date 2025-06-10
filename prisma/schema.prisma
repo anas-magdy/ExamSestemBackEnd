@@ -1,0 +1,128 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum Role {
+  STUDENT
+  TEACHER
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  age       Int
+  role      Role     @default(STUDENT)
+  createdAt DateTime @default(now())
+  udatedAt  DateTime @updatedAt
+  student   Student?
+  teacher   Teacher?
+
+  @@index([name])
+  @@map("users")
+}
+
+//each user is student and student is user
+model Student {
+  id          String        @id @default(uuid())
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      String        @unique
+  StudentExam StudentExam[]
+
+  @@map("students")
+}
+
+enum Status {
+  Pending
+  Confirmed
+  Blocked
+}
+
+//each user is teacher and teacher is user
+model Teacher {
+  id          String @id @default(uuid())
+  user        User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      String @unique
+  subjectName String
+  idCardImage Json
+  idCardData  Json?
+  status      Status @default(Pending)
+  Exam        Exam[]
+
+  @@map("teachers")
+}
+
+model Exam {
+  id          String        @id @default(uuid())
+  name        String
+  duration    String
+  grade       Int
+  questions   Question[]
+  teacher     Teacher       @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  teacherId   String
+  StudentExam StudentExam[]
+
+  @@map("exams")
+}
+
+model StudentExam {
+  id        String  @id @default(uuid())
+  student   Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  studentId String
+
+  Exam   Exam   @relation(fields: [examId], references: [id], onDelete: Cascade)
+  examId String
+
+  score Int
+
+  @@unique([studentId, examId])
+  @@map("studentExam")
+}
+
+// Exam belongs to one Teacher
+// Teacher can have many Exam
+
+model Question {
+  id          String   @id @default(uuid())
+  theQuestion String
+  Exam        Exam     @relation(fields: [examId], references: [id], onDelete: Cascade)
+  examId      String
+  options     Option[]
+
+  @@map("questions")
+}
+
+enum ChoicesKey {
+  A
+  B
+  C
+  D
+}
+
+model Option {
+  id         String     @id @default(uuid())
+  option     String
+  key        ChoicesKey
+  isCorrect  Boolean    @default(false)
+  question   Question   @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  questionId String
+
+  @@map("options")
+}
+
+//one quetion has many options 
+// all options for one question 
