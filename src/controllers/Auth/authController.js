@@ -8,24 +8,34 @@ import { sendDataToQueue } from "../../utilis/rabbitMq.js";
 
 export const register = async (req, res, next) => {
     const { name, email, age, password, role, subjectName } = req.body;
-
+    console.log({ files: req.files.userProfile });
     const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) {
         return next(new ResError("User already exists", 400));
     }
-    
+
     if (!password) {
         return next(new ResError("Enter strong Password", 400));
     }
-
+    let userProfile = { secure_url: null, public_id: null }
     const result = await prisma.$transaction(async (prisma) => {
+        if (req?.files?.userProfile && req.files.userProfile[0]) {
+            const upload = await cloudinary.uploader.upload(req.files.userProfile[0].path, {
+                folder: `exam-management-system/users/${name?.toLowerCase()}`
+            })
+            userProfile = {
+                public_id: upload.public_id,
+                secure_url: upload.secure_url
+            }
+        }
         const user = await prisma.user.create({
             data: {
                 name,
                 email,
                 password: methodsWillUsed.hash({ plaintext: password }),
                 age: Number(age),
-                role
+                role,
+                userProfile
             }
         });
 
@@ -37,7 +47,7 @@ export const register = async (req, res, next) => {
             });
             return { user, student };
         } else if (user.role === "TEACHER") {
-            if (!req.file || !req.file.path) {
+            if (!req?.files?.idCardImage || !req.files.idCardImage[0].path) {
                 throw new ResError("Teacher must provide an ID card image", 400);
             }
             const teacher = await prisma.teacher.create({
@@ -48,7 +58,7 @@ export const register = async (req, res, next) => {
                 }
             });
             await sendDataToQueue("teacher-ocr-registration", {
-                filePath: req.file.path,
+                filePath: req.files.idCardImage[0].path,
                 teacherId: teacher.id,
                 teacherName: user.name,
             });

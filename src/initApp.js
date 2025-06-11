@@ -7,7 +7,7 @@ import cors from "cors"
 
 export const initApp = function (app, express) {
     app.use(cors({
-        origin: ['http://localhost:4200', "*"],
+        origin: ['http://localhost:4200', "https://exam-system-six.vercel.app", "*"],
         credentials: true,
     }));
     app.use(express.json())

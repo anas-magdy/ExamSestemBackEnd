@@ -128,7 +128,8 @@ exports.Prisma.UserScalarFieldEnum = {
   age: 'age',
   role: 'role',
   createdAt: 'createdAt',
-  udatedAt: 'udatedAt'
+  udatedAt: 'udatedAt',
+  userProfile: 'userProfile'
 };
 
 exports.Prisma.StudentScalarFieldEnum = {
@@ -179,12 +180,12 @@ exports.Prisma.SortOrder = {
   desc: 'desc'
 };
 
-exports.Prisma.JsonNullValueInput = {
+exports.Prisma.NullableJsonNullValueInput = {
+  DbNull: Prisma.DbNull,
   JsonNull: Prisma.JsonNull
 };
 
-exports.Prisma.NullableJsonNullValueInput = {
-  DbNull: Prisma.DbNull,
+exports.Prisma.JsonNullValueInput = {
   JsonNull: Prisma.JsonNull
 };
 
