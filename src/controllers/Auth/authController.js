@@ -8,7 +8,7 @@ import { sendDataToQueue } from "../../utilis/rabbitMq.js";
 
 export const register = async (req, res, next) => {
     const { name, email, age, password, role, subjectName } = req.body;
-    console.log({ files: req.files.userProfile });
+   
     const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) {
         return next(new ResError("User already exists", 400));
@@ -102,7 +102,7 @@ export const login = async (req, res, next) => {
     }
     if (user.role == "STUDENT") {
         const token = methodsWillUsed.generateToken({ payload: { id: user.id, role: user.role, email: user.email } })
-        return res.status(200).json({ message: "success", data: token })
+        return res.status(200).json({ message: "success", data: { user: { userProfile: user.userProfile, name: user.name }, token } })
     }
     const teacher = await prisma.teacher.findUnique({ where: { userId: user.id } })
     if (!teacher) {
@@ -115,5 +115,5 @@ export const login = async (req, res, next) => {
         return next(new ResError("you must connect with custom service", 400))
     }
     const token = methodsWillUsed.generateToken({ payload: { id: user.id, role: user.role, email: user.email } })
-    return res.status(200).json({ message: "success", data: token })
+    return res.status(200).json({ message: "success", data: { user: { userProfile: user.userProfile, name: user.name }, token } })
 } 
